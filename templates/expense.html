@@ -1,0 +1,242 @@
+<!--templates/expense.html-->
+{% extends "base.html" %}
+
+{% block links %}
+    <link rel="stylesheet" href="/static/styles/expense.css">  
+{% endblock %}
+
+{% block title %}CashFlow | Dépenses{% endblock %}
+
+{% block content %}
+
+<div id="title_date_box">
+    <h2 id="ExpensePageTitle">Gestion des Dépenses</h2>
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <p id="CurrentDate" style="margin: 0 10px 0 0;"></p>
+        <a href="{{ url_for('dashboard') }}" style="color: white;">
+            <i class="bi bi-box-arrow-left"></i>
+        </a>
+    </div>
+</div>
+
+<div id="categories_summary_box">
+    <div id="categories">
+        <div id="categoriesHeader">
+            <p id="categoriesTitle">Catégories</p>
+            <i class="bi bi-plus-lg" id="openCategoryForm"></i>
+        </div>
+        <div id="categoryCards">
+            {% for category, (formatted_amount, percentage) in expense_totals.items() %}
+            <div class="catCard" data-categoryname="{{ category }}">
+                <div style="font-size: 16px; font-weight: 400;">{{ category }}</div>
+                <div style="color: #f5599a;; font-weight: 600; font-size: 27px;">
+                    {{ formatted_amount }}
+                </div>
+                <div style="font-size: 12px;">
+                    {{ percentage }}%
+                </div>
+                <div style="max-width: 150px; width: 150px; height: 4px; background-color: white; padding-bottom: 3px;">
+                    <div style="background-color: #f5599a; height: 4px; width: {{ percentage | replace('%', '') }}%; "></div>
+                </div>
+            </div>
+            {% endfor %} 
+        </div>
+    </div>
+    <div id="ExpenseSummary">
+        <h2 id="ExpenseSummaryAmount" style="color: #f5599a; font-weight: 900; margin: 0;">{{total_expenses}}</h2>
+        <div style="display: flex; font-size: 13px;">
+            <i style="margin-right: 5px;">De :</i>
+            <p id="fromExpenseSummaryDateRange" style="margin: 0;">{{from_date}}</p>
+        </div>
+        <div style="display: flex; font-size: 13px;">
+            <i style="margin-right: 5px;">À :</i>
+            <p id="toExpenseSummaryDateRange" style="margin: 0;">{{to_date}}</p>
+        </div>
+    </div>
+</div>
+
+<hr>
+
+<div id="transactions">
+    <div id="TransactionHeader">
+        <div class="title">
+            <p>Transactions</p>
+            <i class="bi bi-plus-lg" id="openTransactionForm"></i>
+        </div>
+        <div class="date-range-picker mb-3" id="date-range-picker">
+            <div class="from"> 
+                <label for="dateRangePickerFrom">De :</label>
+                <input type="date" id="dateRangePickerFrom" class="form-control">
+            </div>
+            <div class="to"> 
+                <label for="dateRangePickerTo">À :</label>
+                <input type="date" id="dateRangePickerTo" class="form-control">
+            </div>
+            <div style="align-self: flex-end;" id="btn">
+                <button id="searchButton" class="btn btn-primary">Rechercher</button>
+            </div>
+        </div>
+    </div>
+    <div id="transactionTable" >
+        <table class="table table-responsive table-responsive-sm" id="table">
+            <thead class="sticky-top" style="background-color: #485b9b; z-index: 500;">
+              <tr>
+                <th scope="col">#ID</th>
+                <th scope="col">Catégorie</th>
+                <th scope="col">Description</th>
+                <th scope="col">Date</th>
+                <th scope="col">Montant</th>
+                <th scope="col">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="transactionTableBody">
+                <!-- Les transactions de dépenses seront insérées ici -->
+                {% for expense_transaction in expense_transactions %}
+                <tr data-row-id="{{ expense_transaction['transaction_id'] }}">
+                    <td>{{ "CF{0:03d}EXP".format(expense_transaction['transaction_id']) }}</td> 
+                    <td>{{ expense_transaction['expense_category_name'] }}</td>
+                    <td>{{ expense_transaction['description'] }}</td>
+                    <td>{{ expense_transaction['date'] }}</td>
+                    <td class="income_amount_cell">{{ expense_transaction['amount'] }}</td>
+                    <td class="actions">
+                        <!-- Boutons Modifier et Supprimer avec les attributs de données appropriés -->
+                        <i class="fas fa-edit edit-transaction"
+                           data-transaction-id="{{ expense_transaction['transaction_id'] }}"
+                           data-description="{{ expense_transaction['description'] }}"
+                           data-amount="{{ expense_transaction['amount'] }}"
+                           data-date="{{ expense_transaction['date'] }}"
+                           data-categoryname="{{ expense_transaction['expense_category_name'] }}"
+                           data-categoryId="{{ expense_transaction['expense_category_id'] }}"
+                           aria-hidden="true"></i>
+                        <i class="fas fa-trash-alt delete-transaction"
+                           data-transaction-id="{{ expense_transaction['transaction_id'] }}"
+                           aria-hidden="true"></i> 
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            
+        </table>
+    </div>
+</div>
+
+<!-- Modal de confirmation de suppression -->
+<div id="modal-delete" style="display: none;">
+    <p>Êtes-vous sûr de vouloir supprimer cette transaction ?</p>
+    <button id="modal-content-delete" class="btn btn-danger col-md-3">Supprimer</button>
+    <button id="modal-content-cancel" class="btn btn-primary col-md-3">Annuler</button>
+</div>
+
+<!-- Formulaire pour modifier une transaction de dépense -->
+<div id="modal-edit" style="display: none;">
+    <div class="row g-3">              
+        <div class="col-md-6">
+            <label for="Editdate">Date</label>
+            <input class="form-control" id="Editdate" name="Editdate" placeholder="Modifier la Date de la transaction" required type="date">                   
+        </div>
+
+        <div class="col-md-6">
+            <label for="Editamount">Modifier le Montant</label>           
+            <input class="form-control" id="Editamount" name="Editamount" placeholder="Entrer le Montant" required type="number" min="0">           
+        </div>
+
+        <div class="col-md-6 ">      
+            <label for="editExpenseCategory">Choisir une Catégorie</label>          
+            <select class="form-select" id="editExpenseCategory" name="editExpenseCategory">
+                {% for ec in expense_categories %} 
+                <option value="{{ec.id}}">{{ec.name}}</option>
+                {% endfor %}
+            </select>          
+        </div>
+
+        <div class="col-md-6">
+            <label for="Editdescription">Description (optionnel)</label>
+            <textarea class="form-control" id="Editdescription" name="Editdescription" placeholder="Modifier la Description Ici" maxlength="100"></textarea>               
+        </div>
+
+        <div style="display: flex; justify-content: space-evenly;">
+            <button id="cancelEditTransaction" class="btn btn-danger col-md-3">Annuler</button>
+            <button  id="submitEditTransactionForm" class="btn btn-primary col-md-3">Soumettre</button>
+        </div>
+    </div>
+</div>
+
+<!-- Afficher les messages de succès -->
+<div id="successMessage"></div>
+
+<!-- Formulaire pour créer une transaction de dépense -->
+<div id="transactionForm" style="display: none;">
+
+    <div class="formheader">
+        <h2>Créer une Transaction de Dépense</h2>
+        <i class="bi bi-x-lg" id="closeTransactionForm"></i>
+    </div>
+
+    <div id="transactionFormError"></div>
+
+    <form class="row g-3" method="POST" action="#">  
+        <div class="col-md-6 ">      
+            <label for="ExpenseCategory">Choisir une Catégorie</label>          
+            <select class="form-select" id="ExpenseCategory" name="ExpenseCategory">
+                {% for ec in expense_categories %} 
+                <option value="{{ec.id}}">{{ec.name}}</option>
+                {% endfor %}
+            </select>          
+        </div>
+
+        <div class="col-md-6">
+            <label for="amount">Montant</label>           
+            <input class="form-control" id="amount" min="0" name="amount" placeholder="Entrer le Montant" required="" type="number" value="">           
+        </div>
+
+        <div class="col-md-6">
+            <label for="date">Date</label>
+            <input class="form-control" id="date" name="date" placeholder="Sélectionner la Date" required="" type="date" value="">                   
+        </div>        
+
+        <div class="col-md-6">
+            <label for="description">Description (optionnel)</label>
+            <textarea class="form-control" id="description" maxlength="100" name="description" placeholder="Description Optionnelle Ici"></textarea>               
+        </div>
+
+        <button type="submit" id="submitTransactionForm" class="btn btn-primary col-md-3">Soumettre</button>
+    </form>
+</div>
+
+<!-- Formulaire pour créer une catégorie de dépense -->
+<div id="categoryForm">
+
+    <div class="formheader">
+        <h4 style="margin-right: 10px;">Créer une Catégorie de Dépense</h4>
+        <i class="bi bi-x-lg" id="closeCategoryForm"></i>
+    </div>
+
+    <form class="row g-3" method="POST" action="#"> 
+        <div class="col-md-12">      
+            <label for="categoryName">Nom de la Catégorie</label>     
+            <input class="form-control" id="categoryName" name="categoryName" placeholder="Entrer la catégorie" required="" type="text" value="" maxlength="100">                
+            <div id="categoryFormError"></div>
+        </div>    
+        <button type="submit" id="submitCategoryForm" class="btn btn-primary col-md-12">Soumettre</button>
+    </form>
+</div>
+
+<script>
+    const currentDate = new Date();
+    const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+
+    // Formater les dates dans le format souhaité (par exemple, '4 mars 2020')
+    const formatDate = (date) => {
+    const options = { year: 'numeric', month: 'short', day: '2-digit' };
+    return date.toLocaleDateString('fr-FR', options);
+    };
+         
+    const formattedStartDate = formatDate(startOfMonth);
+    const formattedEndDate = formatDate(currentDate);
+    document.getElementById('CurrentDate').textContent = formattedEndDate;
+</script>
+
+<script src="/static/script/edit_delete_expense.js"></script>
+<script src="/static/script/expense.js"></script>
+<script src="/static/script/searchExpense.js"></script>
+{% endblock %}

@@ -1,0 +1,240 @@
+{% extends "base.html" %}
+
+{% block links %}
+    <link rel="stylesheet" href="/static/styles/income.css">  
+{% endblock %}
+
+{% block title %}CashFlow | Revenus{% endblock %}
+
+{% block content %}
+<div id="title_date_box">
+    <h2 id="IncomePageTitle">Gestion des Revenus</h2>
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <p id="CurrentDate" style="margin: 0 10px 0 0;"></p>
+        <a href="{{ url_for('dashboard') }}" style="color: white;">
+            <i class="bi bi-box-arrow-left"></i>
+        </a>
+    </div>
+</div>
+
+<div id="categories_summary_box">
+    <div id="categories">
+        <div id="categoriesHeader">
+            <p id="categoriesTitle">Catégories</p>
+            <i class="bi bi-plus-lg" id="openCategoryForm"></i>
+        </div>
+        <div id="categoryCards">
+            {% for category, (formatted_amount, percentage) in income_totals.items() %}
+            <div class="catCard" data-categoryname="{{ category }}">
+                <div style="font-size: 16px; font-weight: 400;">{{ category }}</div>
+                <div style="color: #bfd220; font-weight: 600; font-size: 27px;">
+                    {{ formatted_amount }}
+                </div>
+                <div style="font-size: 12px;">
+                    {{ percentage }}%
+                </div>
+                <div style="max-width: 150px; width: 150px; height: 4px; background-color: white; padding-bottom: 3px;">
+                    <div style="background-color: #bfd220; height: 4px; width: {{ percentage | replace('%', '') }}%;"></div>
+                </div>
+            </div>
+            {% endfor %}        
+        </div>
+    </div>
+    <div id="incomeSummary">
+        <h2 id="incomeSummaryAmount" style="color: #bfd220; font-weight: 900; margin: 0;">{{total_income}}</h2>
+        <div style="display: flex; font-size: 13px;">
+            <i style="margin-right: 5px;">De :</i>
+            <p id="fromincomeSummaryDateRange" style="margin: 0;">{{from_date}}</p>
+        </div>
+        <div style="display: flex; font-size: 13px;">
+            <i style="margin-right: 5px;">À :</i>
+            <p id="toincomeSummaryDateRange" style="margin: 0;">{{to_date}}</p>
+        </div>
+    </div>
+</div>
+
+<hr>
+
+<div id="transactions">
+    <div id="TransactionHeader">
+        <div class="title">
+            <p>Transactions</p>
+            <i class="bi bi-plus-lg" id="openTransactionForm"></i>
+        </div>
+        <div class="date-range-picker mb-3" id="date-range-picker">
+            <div class="from"> 
+                <label for="dateRangePickerFrom">De :</label>
+                <input type="date" id="dateRangePickerFrom" class="form-control">
+            </div>
+            <div class="to"> 
+                <label for="dateRangePickerTo">À :</label>
+                <input type="date" id="dateRangePickerTo" class="form-control">
+            </div>
+            <div style="align-self: flex-end;" id="btn">
+                <button id="searchButton" class="btn btn-primary">Rechercher</button>
+            </div>
+        </div>
+    </div>
+    <div id="transactionTable">
+        <table class="table table-responsive table-responsive-sm" id="table">
+            <thead class="sticky-top" style="background-color: #485b9b; z-index: 500;">
+              <tr>
+                <th scope="col">#ID</th>
+                <th scope="col">Catégorie</th>
+                <th scope="col">Description</th>
+                <th scope="col">Date</th>
+                <th scope="col">Montant</th>
+                <th scope="col">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="transactionTableBody">
+              <!-- Les transactions de revenus seront insérées ici -->
+              {% for income_transaction in income_transactions %}
+                <tr data-row-id="{{ income_transaction['transaction_id'] }}">
+                    <td>{{ "CF{0:03d}INC".format(income_transaction['transaction_id']) }}</td> 
+                    <td>{{ income_transaction['income_category_name'] }}</td>
+                    <td>{{ income_transaction['description'] }}</td>
+                    <td>{{ income_transaction['date'] }}</td>
+                    <td class="income_amount_cell">{{ income_transaction['amount'] }}</td>
+                    <td class="actions">
+                        <!-- Boutons Modifier et Supprimer avec les attributs de données appropriés -->
+                        <i class="fas fa-edit edit-transaction"
+                           data-transaction-id="{{ income_transaction['transaction_id'] }}"
+                           data-description="{{ income_transaction['description'] }}"
+                           data-amount="{{ income_transaction['amount'] }}"
+                           data-date="{{ income_transaction['date'] }}"
+                           data-categoryname="{{ income_transaction['income_category_name'] }}"
+                           data-categoryId="{{ income_transaction['income_category_id'] }}"
+                           aria-hidden="true"></i>
+                        <i class="fas fa-trash-alt delete-transaction"
+                           data-transaction-id="{{ income_transaction['transaction_id'] }}"
+                           aria-hidden="true"></i> 
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+          </table>
+    </div>
+</div>
+
+<!-- Modal de confirmation de suppression -->
+<div id="modal-delete" style="display: none;">
+    <p>Êtes-vous sûr de vouloir supprimer cette transaction ?</p>
+    <button id="modal-content-delete" class="btn btn-danger col-md-3">Supprimer</button>
+    <button id="modal-content-cancel" class="btn btn-primary col-md-3">Annuler</button>
+</div>
+
+<!-- Formulaire pour modifier une transaction de revenu -->
+<div id="modal-edit" style="display: none;">
+    <div class="row g-3">              
+        <div class="col-md-6">
+            <label for="Editamount">Modifier le Montant</label>           
+            <input class="form-control" id="Editamount" name="Editamount" placeholder="Entrez le Montant" required type="number" min="0">           
+        </div>
+
+        <div class="col-md-6">
+            <label for="Editdate">Date</label>
+            <input class="form-control" id="Editdate" name="Editdate" placeholder="Modifier la Date de la transaction" required type="date">                   
+        </div>        
+        <div class="col-md-6 ">      
+            <label for="editIncomeCategory">Choisir la Catégorie</label>          
+            <select class="form-select" id="editIncomeCategory" name="editIncomeCategory">
+                {% for ic in income_categories %} 
+                <option value="{{ic.id}}">{{ic.name}}</option>
+                {% endfor %}
+            </select>          
+        </div>
+        <div class="col-md-6">
+            <label for="Editdescription">Description (optionnel)</label>
+            <textarea class="form-control" id="Editdescription" name="Editdescription" placeholder="Modifier la Description Ici" maxlength="100"></textarea>               
+        </div>
+        <div style="display: flex; justify-content: space-evenly;">
+            <button id="cancelEditTransaction" class="btn btn-danger col-md-3">Annuler</button>
+            <button id="submitEditTransactionForm" class="btn btn-primary col-md-3">Soumettre</button>
+        </div>
+    </div>
+</div>
+
+<div id="successMessage"></div>
+
+<!-- Formulaire pour créer une transaction de revenu -->
+<div id="transactionForm" style="display: none;">
+
+    <div class="formheader">
+        <h2>Créer une Transaction de Revenu</h2>
+        <i class="bi bi-x-lg" id="closeTransactionForm"></i>
+    </div>
+
+    <div id="transactionFormError"></div>
+
+    <form class="row g-3" method="POST" action="{{ url_for('create_income_transaction') }}">
+        {{ transaction_form.csrf_token }}
+        
+        <div class="col-md-6 ">      
+            {{ transaction_form.incomeCategory.label }}   
+            {{ transaction_form.incomeCategory(class="form-select") }}    
+        </div>
+
+        <div class="col-md-6">
+            {{ transaction_form.amount.label }}           
+            {{ transaction_form.amount(class="form-control", placeholder="Entrez le Montant", type="number", min="0") }}           
+        </div>
+
+        <div class="col-md-6">
+            {{ transaction_form.date.label }}
+            {{ transaction_form.date(class="form-control", placeholder="Sélectionner la Date") }}                   
+        </div>        
+
+        <div class="col-md-6">
+            {{ transaction_form.description.label }}
+            {{ transaction_form.description(class="form-control", placeholder="Description Optionnelle Ici", maxlength="100") }}               
+        </div>
+
+        <button type="submit" id="submitTransactionForm" class="btn btn-primary col-md-3">Soumettre</button>
+    </form>
+</div>
+
+<!-- Formulaire pour créer une catégorie de revenu -->
+<div id="categoryForm">
+
+    <div class="formheader">
+        <h4>Créer une Catégorie de Revenu</h4>
+        <i class="bi bi-x-lg" id="closeCategoryForm"></i>
+    </div>
+
+    <form class="row g-3" method="POST" action="{{ url_for('income') }}">
+        {{ category_form.csrf_token }}
+        
+        <div class="col-md-6">      
+            {{ category_form.categoryName.label }}     
+            {{ category_form.categoryName(class="form-control", placeholder="Entrez la catégorie") }}                
+            <div id="categoryFormError"></div>
+        </div>
+
+        <div class="col-md-6">  
+            {{ category_form.incomeType.label }}          
+            {{ category_form.incomeType(class="form-select") }}    
+        </div>
+        
+        <button type="submit" id="submitCategoryForm" class="btn btn-primary col-md-3">Soumettre</button>
+    </form>
+</div>
+
+<script>
+    const currentDate = new Date();
+    const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+
+    // Format the dates in the desired format (e.g., 'March 04 2020')
+    const formatDate = (date) => {
+    const options = { year: 'numeric', month: 'short', day: '2-digit' };
+    return date.toLocaleDateString('en-US', options);
+    };
+         
+    const formattedStartDate = formatDate(startOfMonth);
+    const formattedEndDate = formatDate(currentDate);
+    document.getElementById('CurrentDate').textContent=formattedEndDate;
+</script>
+<script src="/static/script/income.js"></script>
+<script src="/static/script/edit_delete_income.js"></script>
+<script src="/static/script/searchIncome.js"></script>
+{% endblock %}

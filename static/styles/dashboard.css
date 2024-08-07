@@ -1,0 +1,315 @@
+#body {
+    position: relative;
+    padding: 0;
+    margin: 0;
+    height: 100vh;
+    background-color: #141c33;
+    color: #ffffff;
+    overflow: hidden;
+}
+
+#mainContainer {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    max-width: 100%;
+    padding: 0 !important; 
+}
+
+#table{
+    color: #ffffff !important;
+}
+
+.income_amount_cell{
+    color: #bfd220;
+}
+
+.expense_amount_cell{
+    color: #f5599a;
+}
+
+#flexbox1{
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: calc(100% - 20px);
+    height: calc(100% - 20px);
+    margin: 6px;
+}
+
+#navbar, #main{
+    flex: 1;
+}
+
+/* bootstrap styling nav bar*/
+#container-fluid{
+    padding: 0;
+    flex-direction: column;
+    height: 100%;
+}
+
+#navbarNavAltMarkup{
+    flex-direction: column;
+    width: 100%;
+    justify-content: space-around;
+}
+
+#pageLinks, #actionLinks{
+    flex-direction: column;
+    width: 100%;
+}
+
+#pageLinks a, #actionLinks a{
+    padding: 15px;
+    color: #ffffff;
+    text-decoration: none;
+}
+
+#pageLinks a i, #actionLinks a i{
+    padding-right: 5px;
+}
+
+#navbar{
+    flex-basis: 200px;
+    height: 100%;
+    background-color: #2c325c !important;
+}
+
+#main{
+    flex-basis: calc(100% - 200px);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+#chartbox{
+    display: flex;
+    gap: 6px;
+    max-width: 100%;
+    width: 100%;
+    white-space: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+#incomeExpenseBalanceBox{
+    display: flex;
+    gap: 6px;
+}
+
+#transactionHistoryBox p{
+    margin: 0;
+}
+
+#transactionBox{
+    max-height: calc(100vh - 313px);
+    overflow-y: scroll;
+}
+
+tr:hover{
+    background-color: #3f4573;
+}
+
+#table{
+    max-height: 100%;
+    width: 100%;
+    white-space: nowrap;
+    overflow-x: auto;
+}
+
+
+#expenseChart, #incomeChart, #extraChart{
+    min-width: calc(100% / 3.04);
+    background-color: #2c325c;
+    min-height: 180px;
+    max-height: 180px;
+    padding: 5px;
+}
+
+#incomeExpenseBalanceBox{
+    max-width: 100%;
+    width: 100%;
+    white-space: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden; 
+}
+
+#incomeBox, #expenseBox, #balanceBox{
+    width: calc(100%/3);
+    min-width: fit-content;
+    background-color: #2c325c;
+    min-height: 100px;
+    max-height: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+}
+
+@media (max-width: 585px) {
+    #transactionBox::-webkit-scrollbar{
+        height: 5px;
+    }
+}
+
+/* Style the scrollbar track */
+#incomeExpenseBalanceBox::-webkit-scrollbar, #chartbox::-webkit-scrollbar {
+    height: 3px;
+  }
+  
+  /* Style the scrollbar thumb (the draggable part) */
+  #incomeExpenseBalanceBox::-webkit-scrollbar-thumb, #chartbox::-webkit-scrollbar-thumb{
+    background-color: #888; 
+  }
+  
+  /* Change the color of the scrollbar thumb on hover */
+  #incomeExpenseBalanceBox::-webkit-scrollbar-thumb:hover, #chartbox::-webkit-scrollbar-thumb:hover{
+    background-color: #555;
+  }
+
+#incomeBox p, #expenseBox p, #balanceBox p{
+    margin: 0;
+    font-weight: 300;
+    font-size: 16px;
+}
+
+#incomeBox div, #expenseBox div, #balanceBox div{
+    font-weight: 900;
+    font-size: 40px;
+}
+
+#transactionBox::-webkit-scrollbar {
+    width: 5px;
+  }
+  
+  #transactionBox::-webkit-scrollbar-thumb {
+    background-color: #888;
+  }
+  
+  #transactionBox::-webkit-scrollbar-thumb:hover {
+    background-color: #555;
+  }
+
+#transactionBox{
+    flex-basis: calc((100%/3) * 2);
+}
+
+#transactionBox{
+    background-color: #2c325c;
+}
+
+@media (max-width: 850px) {
+    #expenseChart, #incomeChart, #extraChart {
+        max-width: fit-content;
+        min-width: calc(100% / 2);
+    }
+    #flexbox1 {
+        flex-direction: column; 
+    }
+
+    #navbar {
+        width: 100%;
+        height: auto;
+    }
+
+    #container-fluid{
+        padding: 0;
+        flex-direction: row;
+        height: 100%;
+        width:100%;
+    }
+
+    #navbarNavAltMarkup {
+        flex-direction: row;
+        height: 100%;
+        width:100%;
+    }
+
+    #pageLinks, #actionLinks {
+        flex-direction: row;
+        
+    }
+
+    #pageLinks{
+        justify-content: center;
+    }
+
+    #actionLinks{
+        justify-content: end;
+        width: max-content;
+    }    
+
+    .nav-text{
+        display: none;
+        font-size: 15px;
+    }
+
+    #pageLinks a:hover .nav-text {
+        display: inline;
+    }
+
+    hr{
+        display: none;
+    }
+
+    #main{
+        width: 100%;
+    }
+}
+
+@media (max-width: 850px) { 
+    #transactionBox{
+        min-height: calc(100vh - 400px);
+        max-height: calc(100vh - 400px);
+        overflow-y: scroll;
+    }
+}
+
+@media (max-width: 575.98px) { 
+    /*#incomeExpenseBalanceBox {
+        order: -1;  Move incomeExpenseBalanceBox above chartbox 
+    }*/
+    #expenseChart, #incomeChart, #extraChart {
+        max-width: fit-content;
+        min-width: 300px;
+    }
+    #flexbox1,#transactionHistoryBox, #incomeExpenseBalanceBox, #chartbox, #main{
+        gap: 3px;
+    }
+    #flexbox1{
+        margin: 3px;
+    }
+
+    #actionLinks a i {
+        padding-right: 0;
+    }
+
+    #pageLinks, #actionLinks {
+        flex-direction: column;
+        
+    }
+
+    .nav-text{
+        display: inline;
+    }
+
+    hr{
+        display: block;
+    }
+
+    #incomeBox, #expenseBox, #balanceBox{
+        width: calc(100%/3);
+    }
+
+    #transactionBox {
+        flex-basis: 100%;
+    }
+}

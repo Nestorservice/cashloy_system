@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block links %}
+    <link rel="stylesheet" href="/static/styles/dashboard.css">
+    <link rel="stylesheet" href="/static/styles/hamburger.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block title %}CashFlow | Dashboard{% endblock %}
+
+{% block content %}
+    <div id="flexbox1">
+        <nav id="navbar" class="navbar navbar-expand-sm navbar-light" style="background-color: transparent; padding: 0px;">
+            <div class="container-fluid" id="container-fluid">
+    
+                <a class="navbar-brand text-light" href="#" style="margin: 0;">
+                    <img src="/static/images/human_face.png" alt="" width="40" height="40" class="d-inline-block align-text-center">
+                    {% if username %}
+                        {{ username }}    
+                    {% endif %}
+                </a>
+    
+                <div class="navbar-toggler" type="button" id="navbar-light" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+    
+                    <input id="checkbox" type="checkbox">
+                    <label class="toggle" for="checkbox">
+                        <div id="bar1" class="bars"></div>
+                        <div id="bar2" class="bars"></div>
+                        <div id="bar3" class="bars"></div>
+                    </label>
+                </div>
+    
+                <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                    <div class="navbar-nav" id="pageLinks">
+                        <a href="{{ url_for('dashboard') }}">
+                            <i class="fas fa-home"></i>
+                            <span class="text nav-text">Dashboard</span>
+                        </a>
+                        <a href="{{ url_for('income') }}">
+                            <i class="bi bi-wallet2"></i>
+                            <span class="text nav-text">Revenu</span>
+                        </a>
+                        <a href="{{ url_for('expense') }}">
+                            <i class="bi bi-currency-pound"></i>
+                            <span class="text nav-text">Depenses</span>
+                        </a>
+                        <a href="{{ url_for('credit') }}">               
+                            <i class="bi bi-currency-euro"></i>
+                            <span class="text nav-text">Credit</span>
+                        </a>
+                        <a href="{{ url_for('debt') }}">
+                            <i class="bi bi-currency-yen"></i>
+                            <span class="text nav-text">Dette</span>
+                        </a>
+                        <a href="{{ url_for('budget') }}">
+                            <i class="bi bi-currency-bitcoin"></i>
+                            <span class="text nav-text">Budget</span>
+                        </a>
+                        <a href="#">
+                            <i class="fas fa-bell"></i>
+                            <span class="text nav-text">Notifications</span>
+                        </a>
+                        <a href="#">
+                            <i class="fas fa-chart-pie"></i>
+                            <span class="text nav-text">Analytise</span>
+                        </a>        
+                    </div>
+
+                    <hr style="background-color: #fff; width: 100%;">
+
+                    <div class="navbar-nav" id="actionLinks">
+                        <a href="{{ url_for('logout') }}">
+                            <i class="fas fa-sign-out-alt fa-rotate-180"></i>
+                            <span class="text nav-text">Logout</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <main id="main">
+            <div id="chartbox">
+                <div id="incomeChart">
+                    
+                </div>
+
+                <div id="expenseChart">
+                    
+                </div>
+                <div id="extraChart">
+
+                </div>
+            </div>
+
+            <div id="incomeExpenseBalanceBox">
+                <div id="incomeBox">
+                    <p>Revenu actuel</p>
+                    <div style="color: #bfd220;">{{"{:,.2f}/=".format(total_income)}}</div>
+                </div>
+                <div id="expenseBox">
+                    <p>Dépenses courantes</p>
+                    <div style="color: #f5599a;">{{"{:,.2f}/=".format(total_expenses)}}</div>
+                </div>
+                <div id="balanceBox">
+                    <p>Solde actuel</p>
+                    <div style="color:
+                    {% if total_balance > 0 %}
+                        #bfd220
+                    {% elif total_balance == 0 %}
+                        gray
+                    {% else %}
+                        #f5599a
+                    {% endif %} ;">
+                    {{"{:,.2f}/=".format(total_balance)}} 
+                    </div>  
+                </div>
+            </div>
+            <div id="transactionHistoryBox">
+                <div id="transactionBox">
+                    <div id="transactionTable">
+                        <table class="table table-responsive" id="table">
+                            <thead class="sticky-top" style="background-color: #485b9b;">
+                                <tr>
+                                    <th scope="col">#Code</th>
+                                    <th scope="col">Categorie</th>
+                                    <th scope="col">Description</th>
+                                    <th scope="col">Date</th>
+                                    <th scope="col">Montant</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transactionTableBody">
+                                {% for transaction in transactions %}
+                                <tr>
+                                    <td>
+                                        {% if transaction.type == 'Income' %}
+                                            {{ "CF{0:03d}INC".format(transaction["id"]) }}
+                                        {% else %}
+                                            {{ "CF{0:03d}EXP".format(transaction["id"]) }}
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ transaction.name }}</td>
+                                    <td>{{ transaction.description }}</td>
+                                    <td>{{ transaction.date }}</td>
+                                    <td class="{% if transaction.type == 'Income' %}income_amount_cell{% else %}expense_amount_cell{% endif %}">
+                                        {{ "{:,.2f}/=".format(transaction.amount) }}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>                    
+
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="/static/script/dashboard.js"></script>
+{% endblock %}

@@ -1,0 +1,239 @@
+{% extends "base.html" %}
+
+{% block links %}
+    <link rel="stylesheet" href="/static/styles/home.css">
+    <link rel="stylesheet" href="/static/styles/hamburger.css">
+{% endblock %}
+
+{% block title %}CashFlow | Accueil{% endblock %}
+
+{% block content %}
+    <nav class="navbar navbar-expand-md navbar-light" style="background-color: transparent; padding: 0px;">
+        <div class="container-fluid" style="padding: 0px;">
+
+            <a class="navbar-brand text-light" href="#">
+                <img src="/static/images/logo1.png" alt="" width="40" height="50" class="d-inline-block align-text-center">
+                CashFlow
+            </a>
+
+            <div class="navbar-toggler" type="button" id="navbar-light" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Basculer la navigation">
+
+                <input id="checkbox" type="checkbox">
+                <label class="toggle" for="checkbox">
+                    <div id="bar1" class="bars"></div>
+                    <div id="bar2" class="bars"></div>
+                    <div id="bar3" class="bars"></div>
+                </label>
+            </div>
+
+            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                <div class="navbar-nav" id="pageLinks">
+                    <a class="nav-link text-light" href="#mainSection">Accueil</a>
+                    <a class="nav-link text-light" href="#featureSection">Fonctionnalités</a>
+                    <a class="nav-link text-light" href="#aboutDev">À Propos du Développeur</a>
+                </div>
+                <div class="navbar-nav" id="actionLinks">
+                    <a class="nav-link text-light" href="{{ url_for('login') }}">Connexion</a>
+                    <a class="nav-link text-light" href="{{ url_for('register') }}">Inscription</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <section class="mt-5" id="mainSection">
+        <div class="row" id="mainRow">
+            <!-- Texte principal à gauche -->
+            <div class="col-md-6 col-sm-6" id="main-text">
+                <h1 id="heading" class="text-light">Système de Gestion Financière CashFlow</h1>
+                <p class="text-light">CashFlow est un système complet de suivi financier personnel conçu pour permettre aux individus de gérer efficacement leurs finances et de mieux contrôler leurs habitudes de dépenses.</p>
+
+                <a href="{{ url_for('register') }}" class="swipe">Commencer 
+                    <span class="containerBTN">
+                        <svg height="24" width="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M0 0h24v24H0z" fill="none"></path>
+                            <path d="M16.172 11l-5.364-5.364 1.414-1.414L20 12l-7.778 7.778-1.414-1.414L16.172 13H4v-2z" fill="currentColor"></path>
+                        </svg>
+                    </span>
+                </a>
+
+            </div>
+            <!-- Image d'illustration à droite -->
+            <div class="col-md-5 col-sm-6" id="illustration">
+                <img src="/static/images/acceuil_pro.png" alt="Illustration" class="img-fluid w-100">
+                <div class="dark-overlay"></div>
+            </div>
+        </div>
+        
+
+        <hr id="hr" class="mt-5 mb-5">
+
+        <div id="featureSection" class="mt-5">
+
+            <div class="flip-card">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front card1">
+                    </div>
+                    <div class="flip-card-back">
+                        <p class="title">Création d'Objectifs</p>
+                        <p>Définissez et surveillez vos objectifs financiers avec précision.
+                            Que ce soit pour économiser pour des vacances de rêve, rembourser des dettes ou constituer un fonds d'urgence, notre application vous aide à rester sur la bonne voie.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flip-card">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front card2">
+                    </div>
+                    <div class="flip-card-back">
+                        <p class="title">Création de Budget</p>
+                        <p>
+                            Créez des budgets personnalisés pour s'adapter à vos circonstances financières uniques.
+                            Définissez des limites de dépenses pour différentes catégories et recevez des alertes lorsque vous vous approchez de vos seuils budgétaires.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flip-card">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front card3">
+                    </div>
+                    <div class="flip-card-back">
+                        <p class="title">Analyse des Dépenses</p>
+                        <p>Obtenez des insights précieux avec nos outils d'analyse des dépenses.
+                            Visualisez les modèles de dépenses, identifiez les domaines pour des économies et prenez des décisions financières éclairées.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flip-card">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front card4">
+                    </div>
+                    <div class="flip-card-back">
+                        <p class="title">États Financiers</p>
+                        <p>
+                        Obtenez une vue claire de votre santé financière avec des décomptes détaillés de vos actifs, passifs, revenus et dépenses.
+                        </p>
+                    </div>
+                </div>
+            </div>  
+        
+        </div>
+        
+        <!-- Section Fonctionnalités pour mobile -->
+        <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel" style="z-index: 3;">
+            <div class="carousel-indicators">
+              <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Diapositive 1"></button>
+              <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Diapositive 2"></button>
+              <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Diapositive 3"></button>
+              <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="3" aria-label="Diapositive 4"></button>
+            </div>
+            <div class="carousel-inner">
+
+              <div class="carousel-item active">
+                <div class="flip-card d-block w-100">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front card1">
+                        </div>
+                        <div class="flip-card-back">
+                            <p class="title">Création d'Objectifs</p>
+                            <p>Définissez et surveillez vos objectifs financiers avec précision.
+                                Que ce soit pour économiser pour des vacances de rêve, rembourser des dettes ou constituer un fonds d'urgence, notre application vous aide à rester sur la bonne voie.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+              </div>
+
+              <div class="carousel-item">
+                <div class="flip-card d-block w-100">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front card2">
+                        </div>
+                        <div class="flip-card-back">
+                            <p class="title">Création de Budget</p>
+                            <p>
+                                Créez des budgets personnalisés pour s'adapter à vos circonstances financières uniques.
+                                Définissez des limites de dépenses pour différentes catégories et recevez des alertes lorsque vous vous approchez de vos seuils budgétaires.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+              </div>
+
+              <div class="carousel-item">
+                <div class="flip-card d-block w-100">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front card3">
+                        </div>
+                        <div class="flip-card-back">
+                            <p class="title">Analyse des Dépenses</p>
+                            <p>Obtenez des insights précieux avec nos outils d'analyse des dépenses.
+                                Visualisez les modèles de dépenses, identifiez les domaines pour des économies et prenez des décisions financières éclairées.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+              </div>
+
+              <div class="carousel-item">
+                <div class="flip-card d-block w-100">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front card4 ">
+                        </div>
+                        <div class="flip-card-back">
+                            <p class="title">États Financiers</p>
+                            <p>
+                            Obtenez une vue claire de votre santé financière avec des décomptes détaillés de vos actifs, passifs, revenus et dépenses.
+                            </p>
+                        </div>
+                    </div>
+                </div> 
+              </div>
+
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Précédent</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Suivant</span>
+            </button>
+        </div>
+
+        <section id="aboutDev" class="mt-5">
+            <div id="devText">
+                <div class="card" id="card">
+                    <div class="card-photo"></div>
+                    <div class="card-title">Toukea Corneille <br>
+                        <span>Développeur Web</span>
+                    </div>
+                    <div class="card-socials">
+                        <a href="#" class="card-socials-btn instagram">
+                            <i class="fa-brands fa-instagram"></i>
+                        </a>
+                        <a href="#/" class="card-socials-btn website">
+                            <i class="fa-solid fa-globe"></i>
+                        </a>
+                        <a href="#" class="card-socials-btn github">
+                            <i class="fa-brands fa-github"></i>
+                        </a>
+                        <a href="#" class="card-socials-btn linkedin">
+                            <i class="fa-brands fa-linkedin-in"></i>
+                        </a>
+                        <a href="#" class="card-socials-btn twitter">
+                            <i class="fa-brands fa-x-twitter"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+        </section>
+    </section>
+    <script src="/static/script/home.js"></script>
+{% endblock %}

@@ -1,0 +1,157 @@
+/*static/styles/register.css*/
+body {
+    position: relative;
+    padding: 0;
+    margin: 0;
+    height: 100vh;
+    background-color: #2c325c !important;
+    background-image: url("/static/images/stacked-waves-haikei.svg");
+    background-size: cover; 
+    background-repeat: no-repeat;
+}
+
+.container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 550px;
+    padding: 0 !important; 
+}
+
+
+
+.flash-messages{
+    height: 50px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.success-messages {
+    background-color: #309a6a; 
+  }
+  
+  .error-messages {
+    background-color: #f95395; 
+  }
+
+  .error-messages{
+    list-style: none;
+    padding: 5px;
+    font-size: 12px;
+    margin-top: 3px;
+  }
+
+         
+  
+.forms{
+    height: 100%;
+    width: 70%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+form{
+    width: 90%;
+    height: 90%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+form input{
+    outline: 0;
+    background-color: rgba(255, 255, 255, 0.5)!important; 
+    color: #ffffff !important;
+    border: none !important;
+}
+
+.form-control:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.title {
+    font-size: 35px;
+    color: #3eeed0;
+    font-weight: 900;
+    letter-spacing: 1px;
+}
+
+#registration-submit-button{
+    border: none;
+    outline: none;
+    background-color: #2c325c !important;
+    border-radius: 5px;
+}
+
+#registration-submit-button:hover {
+    background-color: #212644 !important;
+  }
+  
+.message, .signin {
+    font-size: 14px;
+    color: white;
+}
+
+.signin {
+    text-align: center;
+}
+  
+.signin a {
+    color: #3eeed0;
+    text-decoration: none;
+}
+
+.signin a:hover {
+    color: #ffa05d;
+    text-decoration: underline;
+}
+
+@media (min-width: 1200px){
+.container{
+    max-width: 850px !important; 
+}
+}
+
+@media (min-width: 992px){
+.container{
+    max-width: 750px !important; 
+}
+}
+
+@media (max-width: 576px){
+.container{
+    display: grid;
+    height: 95svh;
+    grid-template-columns: repeat(3, 1fr);
+}
+form {
+    width: 97%;
+    height: 93%;
+}
+.signin {
+    font-size: 12px;
+}
+.forms{
+    width: 100%;
+    grid-column: span 3;
+}
+#image{
+    grid-column: span 1;
+    max-width: 100%;
+    height: auto;
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: -1;
+}
+}
+

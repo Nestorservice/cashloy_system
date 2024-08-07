@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+
+{% block links %}
+    <link rel="stylesheet" href="/static/styles/credit.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block title %}CashFlow | Debt{% endblock %}
+
+{% block content %}
+<div id="top">
+    <h2>Gestion des Dettes</h2>
+    <a href="{{ url_for('dashboard') }}" style="color: white;">
+        <i class="bi bi-box-arrow-left"></i>
+    </a>
+</div>
+
+<div id="bottom">
+
+    <div id="analyticSideBar">
+        <div id="analytics">
+            <div id="totalpaid">
+                <div style="width: 100%;">
+                    <p style="margin: 0; font-size: 15px;">Total paye</p>
+                    <div style="color: #bfd220;" id="paidamt">{{ total_amount_returned }}</div>
+                </div>
+            </div>
+
+            <div id="totalowed">
+                <div style="width: 100%;">
+                    <p style="margin: 0; font-size: 15px;">Total Dette</p>
+                    <div style="color: #f5599a;" id="owedamt">{{ total_amount_received }}</div>
+                </div>
+            </div>
+
+        </div>
+        <div id="chart" data-totalpaidamount="{{ total_amount_returned }}" data-totalowedamount="{{ total_amount_received }}">
+    
+        </div>
+    </div>
+    
+    <main id="main">
+        <div id="title">
+            <p>Debiteurs</p>
+            <i class="bi bi-plus-lg" id="create"></i>
+        </div>
+        <div id="transactionTable" >
+            <table class="table table-responsive table-responsive-sm" id="table">
+                <thead class="sticky-top" style="background-color: #485b9b; z-index: 500;">
+                    <tr>
+                        <th scope="col">Creanciers</th>
+                        <th scope="col">Date de peise de vue</th>
+                        <th scope="col">Montant</th>
+                        <th scope="col">Paye</th>
+                        <th scope="col">Date d'echeance</th>
+                        <th scope="col">Progres (%)</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="transactionTableBody">
+                    {% for debit in debits %}
+                    <tr data-row-id="{{ debit.id }}">
+                        <td>{{ debit.creditor }}</td> 
+                        <td>{{ debit.date_taken.strftime('%Y-%m-%d') }}</td>
+                        <td>{{ "{:,.2f}/=".format(debit.amount) }}</td>
+                        <td>{{ "{:,.2f}/=".format(debit.amount_payed) }}</td>
+                        <td>{{ debit.date_due.strftime('%Y-%m-%d') if debit.date_due else '' }}</td>
+                        <td>{{ ((debit.amount_payed / debit.amount) * 100)|round(2) if debit.amount > 0 else 0 }}%</td>
+                        <td class="actions">
+                            <!-- Pay button with appropriate data attributes -->
+                            <i class="bi bi-credit-card-fill"
+                            data-transaction-id="{{ debit.id }}"
+                            data-amount-owed="{{ debit.amount }}"
+                            data-amount-paid="{{ debit.amount_payed }}"
+                            data-debtor-name="{{ debit.creditor }}"
+                            data-date-taken="{{ debit.date_taken.strftime('%Y-%m-%d') }}"
+                            data-date-due="{{ debit.date_due.strftime('%Y-%m-%d') if debit.date_due else '' }}"></i>
+                            
+                            <!-- Delete button with appropriate data attribute -->
+                            <i class="fas fa-trash-alt delete-transaction"
+                               data-transaction-id="{{ debit.id }}"
+                               aria-hidden="true"></i> 
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>  
+            </table>            
+        </div>
+    </main>
+
+</div>
+
+<!-- Display success messages -->
+<div id="successMessage"></div>
+
+<!-- Display error messages -->
+<div id="errorMessage"></div>
+
+<!-- Delete confirmation modal -->
+<div id="modal-delete" style="display: none;">
+    <p>Etes-vous sûr de vouloir supprimer cette transaction?</p>
+    <button id="modal-content-delete" class="btn btn-danger col-md-3">Supprimer</button>
+    <button id="modal-content-cancel" class="btn btn-primary col-md-3">Fermer</button>
+</div>
+
+<!-- Form to create a Debt -->
+<div id="transactionForm" style="display: none;">
+
+    <div class="formheader">
+        <h2>Prendre une dette</h2>
+        <i class="bi bi-x-lg" id="closeTransactionForm"></i>
+    </div>
+
+    <div id="transactionFormError"></div>
+
+    <form class="row g-3" method="POST" action="#">  
+
+        <div class="col-md-6">  
+            <label for="debtor">Creanciers</label>
+            <input class="form-control" id="debtor" name="debtor" placeholder="Entrer le débiteur" required="" type="text" value="" maxlength="20">                        
+        </div>
+
+        <div class="col-md-6">
+            <label for="amount">Montant</label>           
+            <input class="form-control" id="amount" min="0" name="amount" placeholder="Entrer le Montant" required="" type="number" value="">           
+        </div>
+
+        <div class="col-md-6">
+            <label for="dateTaken">Date de rpise de vue</label>
+            <input class="form-control" id="dateTaken" name="datetaken" placeholder="Selectionner une date" required="" type="date" value="">                   
+        </div>
+        
+        <div class="col-md-6">
+            <label for="dateDue">Date D'echeance/label>
+            <input class="form-control" id="dateDue" name="datetdue" placeholder="Selectionner une date" required="" type="date" value="">                   
+        </div>  
+
+        <div class="col-md-12">
+            <label for="description">Description (facultatif)</label>
+            <textarea class="form-control" id="description" maxlength="100" name="description" placeholder="Decription facultative ici"></textarea>               
+        </div>
+
+        <button type="submit" id="submitTransactionForm" class="btn btn-primary col-md-3">Envoyer</button>
+    </form>
+</div>
+
+
+<!-- Form to create a Debt payment -->
+<div id="transactionPaymentForm" style="display: none;">
+
+    <div class="formheader">
+        <h2>Règlement de la dette</h2>
+        <i class="bi bi-x-lg" id="closePaymentForm"></i>
+    </div>
+
+    <div id="transactionPaymentError"></div>
+
+    <form class="row g-3" method="POST" action="#">  
+
+        <div class="col-md-6">  
+            <label for="debtorPayment">Creanciers</label>
+            <input class="form-control" id="debtorPayment" name="debtor" placeholder="Creanciers" required="" type="text" value="" maxlength="20" disabled>                           
+        </div>
+
+        <div class="col-md-6">
+            <label for="datePaid">Date de payement</label>
+            <input class="form-control" id="datePaid" name="datepaid" placeholder="Selectionner la date" required="" type="date" value="">                   
+        </div>
+
+        <div class="col-md-6">
+            <label for="amountRem">Montant restant</label>           
+            <input class="form-control" id="amountRem" min="0" name="amount" placeholder="Entrer le montant " required="" type="number" value="" disabled>           
+        </div>
+
+        <div class="col-md-6">
+            <label for="amountToPay">Montant a payer</label>           
+            <input class="form-control" id="amountToPay" min="0" name="amount" placeholder="Entrer le montant" required="" type="number" value="">           
+        </div>
+
+        <button type="submit" id="submitPaymentForm" class="btn btn-primary col-md-3">Envoyer</button>
+    </form>
+</div>
+
+<script src="/static/script/debt.js"></script>
+<script src="/static/script/debtchart.js"></script>
+{% endblock %}
