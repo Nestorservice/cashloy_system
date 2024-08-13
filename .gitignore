@@ -1,6 +1,5 @@
 # Ignore l'environnement virtuel
-venv/
-
+myenv/
 # Ignore les fichiers de configuration de l'éditeur de texte
 .vscode/
 .idea/
